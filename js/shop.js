@@ -1,4 +1,4 @@
-// Armory Shop & Character Selector UI
+// Armory Shop & Astra Loadout Deck Manager UI
 (function (global) {
     "use strict";
 
@@ -28,6 +28,7 @@
             const progress = GameConfig.loadProgress();
             const weapons = GameWeapons.getAll();
             const characters = GameCharacters.getAll();
+            const activeLoadout = progress.activeLoadout || ["agni", "vajra", "brahmashira"];
 
             const isWepTab = activeTab === "weapons";
             const selectedWep = GameWeapons.getById(selectedWeaponId);
@@ -41,21 +42,22 @@
             if (isWepTab) {
                 previewTitle = `<span style="color:${selectedWep.color};">${selectedWep.name}</span>`;
                 previewDesc = selectedWep.desc;
+                const cdStr = selectedWep.cooldown > 0 ? `${selectedWep.cooldown.toFixed(1)}s Refuel` : "0s (Instant / Unlimited)";
                 statsHtml = `
+                    <div class="stat-row">
+                        <span>Refuel Cooldown</span>
+                        <span style="color:${selectedWep.cooldown > 0 ? '#ff5252' : 'var(--mint)'};font-weight:800;font-size:12px;">${cdStr}</span>
+                    </div>
                     <div class="stat-row">
                         <span>Projectile Velocity</span>
                         <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${Math.min(100, selectedWep.speedMult * 55)}%;"></div></div>
                     </div>
                     <div class="stat-row">
-                        <span>Draw &amp; Cast Speed</span>
-                        <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${Math.min(100, selectedWep.drawSpeed * 58)}%;"></div></div>
-                    </div>
-                    <div class="stat-row">
-                        <span>Wind Resistance</span>
+                        <span>Wind Penetration</span>
                         <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${selectedWep.windPierce * 100}%;"></div></div>
                     </div>
                     <div class="stat-row">
-                        <span>Special Perk</span>
+                        <span>Special Power</span>
                         <span style="color:${selectedWep.color};font-size:12px;">${selectedWep.special}</span>
                     </div>
                 `;
@@ -84,27 +86,90 @@
 
             // Right Items List Content
             let itemsHtml = "";
+            let loadoutDeckHtml = "";
+
             if (isWepTab) {
+                // 4-Slot Loadout Deck Header
+                const gandivaWep = GameWeapons.getById("gandiva");
+                const isGandivaActive = progress.equippedWeapon === "gandiva";
+
+                const slotsHtml = [0, 1, 2].map((slotIdx) => {
+                    const wandId = activeLoadout[slotIdx];
+                    const w = wandId ? GameWeapons.getById(wandId) : null;
+                    const isActive = w && progress.equippedWeapon === w.id;
+
+                    if (!w) {
+                        return `
+                            <div style="flex:1;padding:8px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.2);text-align:center;">
+                                <div style="font-size:11px;color:var(--muted);font-family:'Cinzel',serif;">Slot ${slotIdx + 2}</div>
+                                <small style="color:var(--muted);font-size:10px;">[Empty]</small>
+                            </div>
+                        `;
+                    }
+
+                    return `
+                        <div style="flex:1;padding:8px 10px;border-radius:10px;background:linear-gradient(135deg,rgba(11,26,44,0.9),rgba(6,17,30,0.95));border:1.5px solid ${isActive ? 'var(--gold)' : 'rgba(245,197,66,0.3)'};box-shadow:${isActive ? '0 0 14px var(--gold-glow)' : 'none'};display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="GameShop.equipWeapon('${w.id}')">
+                            <span style="font-size:20px;color:${w.color};">${w.icon}</span>
+                            <div style="flex:1;overflow:hidden;">
+                                <div style="font-family:'Cinzel',serif;font-size:11px;font-weight:800;color:#ffffff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">[${slotIdx + 2}] ${w.name.split(' ')[0]}</div>
+                                <small style="color:${isActive ? 'var(--gold-bright)' : 'var(--muted)'};font-size:10px;">${isActive ? '★ In Hand' : 'Tap to Hold'}</small>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                loadoutDeckHtml = `
+                    <div style="margin-bottom:14px;padding:12px 16px;border-radius:14px;background:rgba(6,17,30,0.85);border:1px solid var(--gold-border);">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                            <span style="font-family:'Cinzel',serif;font-size:13px;font-weight:800;color:var(--gold-bright);">✦ ACTIVE 4-SLOT LOADOUT (1 Gandiva + Max 3 Magical Wands)</span>
+                            <small style="color:var(--muted);font-size:11px;">Keys 1, 2, 3, 4 during battle</small>
+                        </div>
+                        <div style="display:flex;gap:8px;">
+                            <!-- Permanent Slot 1: Gandiva Dhanush -->
+                            <div style="flex:1;padding:8px 10px;border-radius:10px;background:linear-gradient(135deg,rgba(11,26,44,0.9),rgba(6,17,30,0.95));border:1.5px solid ${isGandivaActive ? 'var(--gold)' : 'rgba(245,197,66,0.3)'};box-shadow:${isGandivaActive ? '0 0 14px var(--gold-glow)' : 'none'};display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="GameShop.equipWeapon('gandiva')">
+                                <span style="font-size:20px;color:${gandivaWep.color};">${gandivaWep.icon}</span>
+                                <div style="flex:1;overflow:hidden;">
+                                    <div style="font-family:'Cinzel',serif;font-size:11px;font-weight:800;color:#ffffff;">[1] Gandiva</div>
+                                    <small style="color:${isGandivaActive ? 'var(--gold-bright)' : 'var(--mint)'};font-size:10px;">${isGandivaActive ? '★ In Hand' : 'Core Bow'}</small>
+                                </div>
+                            </div>
+                            ${slotsHtml}
+                        </div>
+                    </div>
+                `;
+
                 itemsHtml = weapons.map(function (w) {
                     const isUnlocked = progress.weapons.includes(w.id);
-                    const isEquipped = progress.equippedWeapon === w.id;
+                    const isEquippedInHand = progress.equippedWeapon === w.id;
+                    const isInLoadout = w.id === "gandiva" || activeLoadout.includes(w.id);
                     const isSelected = selectedWep.id === w.id;
 
                     let btn = "";
-                    if (isEquipped) {
-                        btn = `<span class="action-btn equipped">Equipped</span>`;
-                    } else if (isUnlocked) {
-                        btn = `<button type="button" class="action-btn equip" onclick="GameShop.equipWeapon('${w.id}')">Equip</button>`;
+                    if (w.id === "gandiva") {
+                        btn = isEquippedInHand
+                            ? `<span class="action-btn equipped">In Hand</span>`
+                            : `<button type="button" class="action-btn equip" onclick="GameShop.equipWeapon('gandiva')">Hold</button>`;
+                    } else if (isEquippedInHand) {
+                        btn = `<span class="action-btn equipped">In Hand</span>`;
+                    } else if (isInLoadout) {
+                        btn = `
+                            <div style="display:flex;gap:6px;">
+                                <button type="button" class="action-btn equip" onclick="GameShop.equipWeapon('${w.id}')">Hold</button>
+                                <button type="button" style="padding:6px 10px;border-radius:16px;font-size:11px;border:1px solid rgba(255,255,255,0.2);color:var(--muted);background:none;" onclick="GameShop.toggleLoadout('${w.id}')">✕</button>
+                            </div>
+                        `;
                     } else {
-                        btn = `<button type="button" class="action-btn buy" onclick="GameShop.buyWeapon('${w.id}')">Buy 🪙 ${w.cost}</button>`;
+                        btn = `<button type="button" class="action-btn buy" onclick="GameShop.toggleLoadout('${w.id}')">+ Add to Deck</button>`;
                     }
+
+                    const badgeRefuel = w.cooldown > 0 ? `<span style="font-size:10px;color:#ff8a80;margin-left:6px;">(${w.cooldown}s refuel)</span>` : `<span style="font-size:10px;color:var(--mint);margin-left:6px;">(unlimited)</span>`;
 
                     return `
                         <div class="item-list-card ${isSelected ? 'selected' : ''}" onclick="GameShop.selectWeapon('${w.id}')">
                             <div class="item-list-left">
                                 <span class="item-list-icon" style="color:${w.color};text-shadow:0 0 10px ${w.color};">${w.icon}</span>
                                 <div class="item-list-info">
-                                    <strong>${w.name}</strong>
+                                    <strong>${w.name} ${badgeRefuel}</strong>
                                     <small style="color:${w.color};">${w.special}</small>
                                 </div>
                             </div>
@@ -124,7 +189,7 @@
                     } else if (isUnlocked) {
                         btn = `<button type="button" class="action-btn equip" onclick="GameShop.selectHero('${c.id}')">Choose</button>`;
                     } else {
-                        btn = `<button type="button" class="action-btn buy" onclick="GameShop.unlockHero('${c.id}')">Unlock 🪙 1000</button>`;
+                        btn = `<button type="button" class="action-btn buy" onclick="GameShop.unlockHero('${c.id}')">Unlock</button>`;
                     }
 
                     return `
@@ -146,7 +211,7 @@
                 <div class="page shop-page">
                     <div class="shop-header">
                         <div>
-                            <div class="eyebrow">Celestial Arsenal &amp; Heroes</div>
+                            <div class="eyebrow">Celestial Arsenal &amp; 4-Slot Loadout</div>
                             <h2>DIVINE ARMORY</h2>
                         </div>
                         <div style="display:flex;gap:12px;align-items:center;">
@@ -168,7 +233,10 @@
                             ${statsHtml}
                         </div>
 
-                        <div class="shop-list-box">${itemsHtml}</div>
+                        <div class="shop-list-box">
+                            ${loadoutDeckHtml}
+                            ${itemsHtml}
+                        </div>
                     </div>
                 </div>
             `;
@@ -191,38 +259,49 @@
             GameShop.render();
         },
 
-        buyWeapon: function (id) {
+        toggleLoadout: function (id) {
+            if (id === "gandiva") return;
             const progress = GameConfig.loadProgress();
-            const wep = GameWeapons.getById(id);
-            if (!wep) return;
+            if (!Array.isArray(progress.activeLoadout)) progress.activeLoadout = ["agni", "vajra", "brahmashira"];
 
-            if (progress.coins >= wep.cost) {
-                progress.coins -= wep.cost;
-                progress.weapons.push(id);
-                progress.equippedWeapon = id;
-                GameConfig.saveProgress(progress);
-
-                GameAudio.play("coin");
-                GameAudio.play("shankha");
-                if (global.GameUI) global.GameUI.notify("Weapon Acquired!", `${wep.name} is now equipped!`, 2.0);
-                GameShop.render();
+            const idx = progress.activeLoadout.indexOf(id);
+            if (idx >= 0) {
+                if (progress.activeLoadout.length > 1) {
+                    progress.activeLoadout.splice(idx, 1);
+                    if (progress.equippedWeapon === id) {
+                        progress.equippedWeapon = "gandiva";
+                    }
+                }
             } else {
-                GameAudio.play("pull");
-                if (global.GameUI) global.GameUI.notify("Insufficient Treasury", `You need ${wep.cost - progress.coins} more coins! Complete more levels.`);
+                if (progress.activeLoadout.length >= 3) {
+                    progress.activeLoadout.shift(); // replace oldest wand
+                }
+                progress.activeLoadout.push(id);
+                progress.equippedWeapon = id;
             }
+            GameConfig.saveProgress(progress);
+            GameAudio.play("coin");
+            GameShop.render();
         },
 
         equipWeapon: function (id) {
             const progress = GameConfig.loadProgress();
             progress.equippedWeapon = id;
+            // Ensure equipped weapon is in loadout if it's a magical wand
+            if (id !== "gandiva" && !progress.activeLoadout.includes(id)) {
+                if (progress.activeLoadout.length >= 3) progress.activeLoadout.shift();
+                progress.activeLoadout.push(id);
+            }
             GameConfig.saveProgress(progress);
 
             const wep = GameWeapons.getById(id);
             if (wep.type === "chakra") GameAudio.play("chakra");
             else if (wep.id === "nagastra") GameAudio.play("nagastra");
-            else GameAudio.play("zap");
+            else if (wep.id === "vajra") GameAudio.play("zap");
+            else if (wep.id === "agni") GameAudio.play("fire");
+            else GameAudio.play("coin");
 
-            if (global.GameUI) global.GameUI.notify("Equipped", `${wep.name} ready for battle!`);
+            if (global.GameUI) global.GameUI.notify("Equipped", `${wep.name} ready in hand!`);
             GameShop.render();
         },
 
@@ -239,20 +318,14 @@
 
         unlockHero: function (id) {
             const progress = GameConfig.loadProgress();
-            const cost = 1000;
-            if (progress.coins >= cost) {
-                progress.coins -= cost;
+            if (!progress.characters.includes(id)) {
                 progress.characters.push(id);
-                progress.selectedCharacter = id;
-                GameConfig.saveProgress(progress);
-
-                GameAudio.play("coin");
-                GameAudio.play("shankha");
-                GameShop.render();
-            } else {
-                GameAudio.play("pull");
-                if (global.GameUI) global.GameUI.notify("Insufficient Treasury", `Unlock hero requires 1,000 coins.`);
             }
+            progress.selectedCharacter = id;
+            GameConfig.saveProgress(progress);
+
+            GameAudio.play("shankha");
+            GameShop.render();
         },
 
         close: function () {

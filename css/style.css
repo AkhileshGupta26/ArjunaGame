@@ -758,6 +758,124 @@ h2 {
     pointer-events: none;
 }
 
+/* Astra Loadout Quick-Access Spell Bar (4 Slots: Gandiva + 3 Magical Wands) */
+.hud-loadout-container {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    pointer-events: auto;
+    z-index: 25;
+}
+
+.loadout-slot {
+    position: relative;
+    width: 72px;
+    height: 76px;
+    border-radius: 14px;
+    background: linear-gradient(145deg, rgba(11, 26, 44, 0.95), rgba(6, 17, 30, 0.98));
+    border: 1.5px solid rgba(245, 197, 66, 0.35);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    user-select: none;
+}
+
+.loadout-slot:hover {
+    border-color: var(--gold);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 10px 24px rgba(245, 197, 66, 0.35);
+}
+
+.loadout-slot.active {
+    border: 2px solid var(--gold);
+    box-shadow: 0 0 20px var(--gold-glow), inset 0 0 12px rgba(245, 197, 66, 0.25);
+    transform: translateY(-4px) scale(1.08);
+}
+
+.slot-num-badge {
+    position: absolute;
+    top: 4px;
+    left: 7px;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--muted);
+    font-family: 'Cinzel', serif;
+}
+
+.loadout-slot.active .slot-num-badge {
+    color: var(--gold-bright);
+}
+
+.slot-icon {
+    font-size: 26px;
+    margin-top: 4px;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+    transition: transform 0.2s ease;
+}
+
+.loadout-slot:hover .slot-icon {
+    transform: scale(1.15);
+}
+
+.slot-name {
+    font-size: 10px;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: 'Cinzel', serif;
+    max-width: 64px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Cooldown Refuel Radial / Overlay */
+.slot-cooldown-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(4, 11, 20, 0.88);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+    transition: opacity 0.2s ease;
+}
+
+.slot-cooldown-overlay.hidden {
+    display: none !important;
+}
+
+.slot-cooldown-overlay .cooldown-timer-text {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    font-weight: 900;
+    color: #ff5252;
+    text-shadow: 0 0 10px rgba(255, 82, 82, 0.8);
+    z-index: 2;
+}
+
+.slot-cooldown-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(255, 82, 82, 0.45);
+    border-top: 1.5px solid #ff5252;
+    transition: height 0.08s linear;
+}
+
 /* Responsive Media Queries */
 @media (max-width: 900px) {
     .cards-grid {

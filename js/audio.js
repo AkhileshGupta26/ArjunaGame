@@ -236,6 +236,127 @@
                     osc.stop(now + 0.35);
                     return;
                 }
+
+                if (type === "meteor") {
+                    // Deep crashing meteorite impact + explosive roar
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = "sawtooth";
+                    osc.frequency.setValueAtTime(90, now);
+                    osc.frequency.exponentialRampToValueAtTime(30, now + 0.55);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.62);
+                    return;
+                }
+
+                if (type === "shock_ball") {
+                    // Electric shock ball hum & high-voltage crackle
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = "square";
+                    osc.frequency.setValueAtTime(620, now);
+                    osc.frequency.linearRampToValueAtTime(240, now + 0.25);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.27);
+                    return;
+                }
+
+                if (type === "venom") {
+                    // Toxic hiss & acid fizzle
+                    const osc = ctx.createOscillator();
+                    const filter = ctx.createBiquadFilter();
+                    const gain = ctx.createGain();
+                    osc.type = "sawtooth";
+                    osc.frequency.setValueAtTime(1400, now);
+                    osc.frequency.exponentialRampToValueAtTime(300, now + 0.4);
+                    filter.type = "bandpass";
+                    filter.frequency.setValueAtTime(2200, now);
+                    filter.Q.value = 6;
+                    gain.gain.setValueAtTime(0.07, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+                    osc.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.47);
+                    return;
+                }
+
+                if (type === "cosmic") {
+                    // Cataclysmic cosmic apocalypse drone & lightning crash
+                    [55, 110, 220].forEach(function (f, idx) {
+                        const osc = ctx.createOscillator();
+                        const filter = ctx.createBiquadFilter();
+                        const gain = ctx.createGain();
+                        osc.type = "sawtooth";
+                        osc.frequency.setValueAtTime(f, now);
+                        osc.frequency.exponentialRampToValueAtTime(f * 0.5, now + 1.2);
+                        filter.type = "lowpass";
+                        filter.frequency.setValueAtTime(450, now);
+                        gain.gain.setValueAtTime(0.12 / (idx + 1), now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 1.25);
+                        osc.connect(filter);
+                        filter.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(now);
+                        osc.stop(now + 1.3);
+                    });
+                    return;
+                }
+
+                if (type === "solar_beam") {
+                    // Sizzling solar thermonuclear laser hum
+                    const osc = ctx.createOscillator();
+                    const filter = ctx.createBiquadFilter();
+                    const gain = ctx.createGain();
+                    osc.type = "sawtooth";
+                    osc.frequency.setValueAtTime(480, now);
+                    osc.frequency.linearRampToValueAtTime(720, now + 0.8);
+                    osc.frequency.linearRampToValueAtTime(540, now + 1.6);
+                    filter.type = "bandpass";
+                    filter.frequency.setValueAtTime(1200, now);
+                    filter.Q.value = 4.0;
+                    gain.gain.setValueAtTime(0.001, now);
+                    gain.gain.linearRampToValueAtTime(0.08, now + 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
+                    osc.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 1.85);
+                    return;
+                }
+
+                if (type === "water_surge") {
+                    // Roaring ocean torrent & rushing waves
+                    const osc = ctx.createOscillator();
+                    const filter = ctx.createBiquadFilter();
+                    const gain = ctx.createGain();
+                    osc.type = "triangle";
+                    osc.frequency.setValueAtTime(180, now);
+                    osc.frequency.linearRampToValueAtTime(320, now + 0.5);
+                    osc.frequency.linearRampToValueAtTime(120, now + 1.5);
+                    filter.type = "lowpass";
+                    filter.frequency.setValueAtTime(500, now);
+                    filter.frequency.linearRampToValueAtTime(1100, now + 0.6);
+                    gain.gain.setValueAtTime(0.001, now);
+                    gain.gain.linearRampToValueAtTime(0.1, now + 0.15);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 1.7);
+                    osc.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 1.75);
+                    return;
+                }
             } catch (e) {
                 // Non-blocking audio
             }
