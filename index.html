@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script id="mypip-input-kit" src="input.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#06111e">
+    <title>ARJUNA — The Bow &amp; Beyond</title>
+    <!-- Google Fonts: Cinzel Decorative, Cinzel, Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Modular CSS Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <canvas id="world" aria-label="Arjuna — The Bow &amp; Beyond"></canvas>
+    
+    <!-- Modern Classical Header HUD -->
+    <div id="hud" class="hidden">
+        <div class="hud-bar">
+            <div class="hud-group">
+                <button type="button" id="hud-back" class="hud-btn" aria-label="Back to Trials">‹ Back</button>
+                <div class="hud-title-box">
+                    <div id="hud-level-title" class="hud-title-name">The Wooden Bird</div>
+                    <div id="hud-objective" class="hud-title-sub">🎯 0 / 3 Targets · 8 Arrows</div>
+                </div>
+            </div>
+            <div class="hud-group">
+                <div id="hud-wind-pill" class="hud-pill wind-pill">
+                    <span id="hud-wind-arrow" class="wind-arrow">➔</span>
+                    <span id="hud-wind-val">2.0 m/s</span>
+                </div>
+                <div id="hud-coin-pill" class="hud-pill coin-pill">
+                    <span class="coin-icon">🪙</span>
+                    <span id="hud-coin-val">250</span>
+                </div>
+                <button type="button" id="hud-weapon-btn" class="hud-pill clickable" title="Switch Weapon / Shop">
+                    <span id="hud-wep-icon">➶</span>
+                    <span id="hud-wep-name">Gandiva</span>
+                </button>
+                <button type="button" id="hud-shop-btn" class="hud-btn shop-btn">🛒 Shop</button>
+                <button type="button" id="hud-sound-btn" class="hud-btn">🔊</button>
+            </div>
+        </div>
+
+        <div id="toast" role="status" aria-live="polite"></div>
+
+        <div class="hud-stats-bottom">
+            <div id="health-container" class="health-bar-container hidden">
+                <div class="bar-label">
+                    <span id="foe-name">Opponent</span>
+                    <span id="foe-hp-val">100 / 100</span>
+                </div>
+                <div class="bar-track">
+                    <div id="foe-bar-fill" class="bar-fill boss"></div>
+                </div>
+            </div>
+            <div id="hud-status" class="hud-status-banner"></div>
+            <div id="hud-hint" class="hud-hint">Touch &amp; drag to aim · Release to loose arrow</div>
+        </div>
+    </div>
+
+    <!-- Interactive Navigation Menus & Armory Modals -->
+    <div id="menu"></div>
+
+    <!-- Loosely Coupled System Architecture Modules -->
+    <script src="js/config.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/characters.js"></script>
+    <script src="js/weapons.js"></script>
+    <script src="js/shop.js"></script>
+
+    <!-- Individual Chapter Modules -->
+    <script src="js/chapters/chapter1.js"></script>
+    <script src="js/chapters/chapter2.js"></script>
+    <script src="js/chapters/chapter3.js"></script>
+    <script src="js/chapters/chapter4.js"></script>
+    <script src="js/chapters/chapter5.js"></script>
+    <script src="js/chapters/chapter6.js"></script>
+
+    <!-- Levels Aggregator, Canvas Renderer & Main Game Loop -->
+    <script src="js/levels.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>

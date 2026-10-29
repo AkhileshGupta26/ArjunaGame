@@ -1,0 +1,20 @@
+{
+  "name": "arjuna-game",
+  "version": "1.0.0",
+  "description": "ARJUNA — The Bow & Beyond (Mahabharata-inspired HTML5 Game)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "game",
+    "html5",
+    "canvas",
+    "mahabharata",
+    "arjuna",
+    "archery"
+  ],
+  "author": "",
+  "license": "ISC"
+}
